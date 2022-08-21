@@ -1,4 +1,5 @@
 # pou-lua
+**WARNING: this requires socket module**
 This module was made to get easy access to Pou server (app.pou.me)
 
 # Examples
