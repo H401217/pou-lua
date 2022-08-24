@@ -39,63 +39,62 @@ pou.login = function(email, pass)
   if r.error then error("Couldn't Login: "..r.error.message) end
   client.cookie = h["set-cookie"]
 
-  client.topLikes = function(json) --true for table, false for json string
+  client.topLikes = function(_json) --true for table, false for json string
     local r,h,c = req(host.."/ajax/site/top_likes?_a=1&_c=1&_v=4&_r=253","GET",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
   
-  client.getUserByNickname = function(nick,json)
+  client.getUserByNickname = function(nick,_json)
     local r,h,c = req(host.."/ajax/search/visit_user_by_nickname?n="..urlencode(nick).."&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
   
-  client.getUserByEmail = function(email,json)
+  client.getUserByEmail = function(email,_json)
     local r,h,c = req(host.."/ajax/search/visit_user_by_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
   
-  client.randomUser = function(json)
+  client.randomUser = function(_json)
     local r,h,c = req(host.."/ajax/search/visit_random_user?_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
 
-  client.getFavorites = function(id,json)
+  client.getFavorites = function(id,_json)
     local r,h,c = req(host.."/ajax/user/favorites?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
 
-  client.getLikers = function(id,json)
+  client.getLikers = function(id,_json)
     local r,h,c = req(host.."/ajax/user/likers?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
 
-  client.getVisitors = function(id,json)
+  client.getVisitors = function(id,_json)
     local r,h,c = req(host.."/ajax/user/visitors?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
 
-  client.getMessages = function(id,json)
+  client.getMessages = function(id,_json)
     local r,h,c = req(host.."/ajax/user/messages?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
-    if json == true then r = json.decode(r) end
+    if _json == true then r = json.decode(r) end
     return r
   end
 
   return client
 end
-
 return pou
