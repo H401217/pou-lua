@@ -26,13 +26,13 @@ end
 local pou = {}
 
 pou.isRegistered = function(email)
-  local res = json.decode(req(host.."/ajax/site/check_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=253","POST"))
+  local res = json.decode(req(host.."/ajax/site/check_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=254","POST"))
   if res.registered then return res.registered else error(res.error.message) end
 end
 
 pou.login = function(email, pass)
   local client = {}
-  local r,h,c = req(host.."/ajax/site/login?e="..urlencode(email).."&p="..md5.sumhexa(pass).."&_a=1&_c=1&_v=4&_r=253","POST")
+  local r,h,c = req(host.."/ajax/site/login?e="..urlencode(email).."&p="..md5.sumhexa(pass).."&_a=1&_c=1&_v=4&_r=254","POST")
   r = string.gsub(r,"\\","") client.me = r
   local _success_,___r = pcall(function() json.decode(r) end)
   if success then r = ___r end
@@ -40,56 +40,56 @@ pou.login = function(email, pass)
   client.cookie = h["set-cookie"]
 
   client.topLikes = function(_json) --true for table, false for json string
-    local r,h,c = req(host.."/ajax/site/top_likes?_a=1&_c=1&_v=4&_r=253","GET",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/site/top_likes?_a=1&_c=1&_v=4&_r=254","GET",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
   
   client.getUserByNickname = function(nick,_json)
-    local r,h,c = req(host.."/ajax/search/visit_user_by_nickname?n="..urlencode(nick).."&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/search/visit_user_by_nickname?n="..urlencode(nick).."&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
   
   client.getUserByEmail = function(email,_json)
-    local r,h,c = req(host.."/ajax/search/visit_user_by_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/search/visit_user_by_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
   
   client.randomUser = function(_json)
-    local r,h,c = req(host.."/ajax/search/visit_random_user?_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/search/visit_random_user?_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
 
   client.getFavorites = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/favorites?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/user/favorites?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
 
   client.getLikers = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/likers?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/user/likers?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
 
   client.getVisitors = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/visitors?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/user/visitors?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
   end
 
   client.getMessages = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/messages?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=253","POST",{Cookie=client.cookie})
+    local r,h,c = req(host.."/ajax/user/messages?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
     r = string.gsub(r,"\\","")
     if _json == true then r = json.decode(r) end
     return r
