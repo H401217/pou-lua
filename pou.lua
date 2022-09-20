@@ -1,16 +1,18 @@
-local function urlencode(str)
-   str = string.gsub (str, "([^0-9a-zA-Z !'()*._~-])", -- locale independent
-      function (c) return string.format ("%%%02X", string.byte(c)) end)
-   str = string.gsub (str, " ", "+")
-   return str
-end
-
+_G.cookie = ""
 local socket = require('socket.http')
 local json = require("json")
 local ltn12 = require('ltn12')
 local md5 = require("md5")
 
 local host = "http://app.pou.me/"
+local versionCode = 254
+
+local function urlencode(str)
+   str = string.gsub (str, "([^0-9a-zA-Z !'()*._~-])", -- locale independent
+      function (c) return string.format ("%%%02X", string.byte(c)) end)
+   str = string.gsub (str, " ", "+")
+   return str
+end
 
 local function req(u,m,h)
   local t = {}
@@ -23,77 +25,83 @@ local function req(u,m,h)
   return table.concat(t), headers, code
 end
 
+function get(path,_json)
+  if _json == true then
+    return json.decode(req(host..path.."&s=0&_a=1&_c=1&_v=4&_r="..versionCode,"GET",{Cookie = tostring(_G.cookie)}))
+  else
+    return req(host..path.."&s=0&_a=1&_c=1&_v=4&_r="..versionCode,"GET",{Cookie = tostring(_G.cookie)})
+  end
+end
+function post(path,_json)
+  if _json == true then
+    return json.decode(req(host..path.."&s=0&_a=1&_c=1&_v=4&_r="..versionCode,"POST",{Cookie = tostring(_G.cookie)}))
+  else
+    return req(host..path.."&s=0&_a=1&_c=1&_v=4&_r="..versionCode,"POST",{Cookie = tostring(_G.cookie)})
+  end
+end
+
+--Module
 local pou = {}
 
 pou.isRegistered = function(email)
-  local res = json.decode(req(host.."/ajax/site/check_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=254","POST"))
-  if res.registered then return res.registered else error(res.error.message) end
+  local res = post("/ajax/site/check_email?e="..urlencode(email),false)
+  --if res.registered then return res.registered else error("An error occurred") end
+return res
 end
 
 pou.login = function(email, pass)
   local client = {}
-  local r,h,c = req(host.."/ajax/site/login?e="..urlencode(email).."&p="..md5.sumhexa(pass).."&_a=1&_c=1&_v=4&_r=254","POST")
-  r = string.gsub(r,"\\","") client.me = r
+  
+  local r,h,c = post("/ajax/site/login?e="..urlencode(email).."&p="..md5.sumhexa(pass),false)
+  --r = string.gsub(r,"\\","")
+  client.me = r
   local _success_,___r = pcall(function() json.decode(r) end)
   if success then r = ___r end
   if r.error then error("Couldn't Login: "..r.error.message) end
-  client.cookie = h["set-cookie"]
-
-  client.topLikes = function(_json) --true for table, false for json string
-    local r,h,c = req(host.."/ajax/site/top_likes?_a=1&_c=1&_v=4&_r=254","GET",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  _G.cookie = h["set-cookie"]
+  
+  client.topLikes = function(j) --true for table, false for json string
+    local a,b,c = get("/ajax/site/top_likes?_a=1&_c=1&_v=4&_r=254",j) return a
   end
   
-  client.getUserByNickname = function(nick,_json)
-    local r,h,c = req(host.."/ajax/search/visit_user_by_nickname?n="..urlencode(nick).."&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.getUserByNickname = function(nick,j)
+    local r,h,c = post("/ajax/search/visit_user_by_nickname?n="..urlencode(nick),j) return r
   end
   
-  client.getUserByEmail = function(email,_json)
-    local r,h,c = req(host.."/ajax/search/visit_user_by_email?e="..urlencode(email).."&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.getUserByEmail = function(email,j)
+    local r,h,c = post("/ajax/search/visit_user_by_email?e="..urlencode(email),j) return r
   end
   
-  client.randomUser = function(_json)
-    local r,h,c = req(host.."/ajax/search/visit_random_user?_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.getUserById = function(id,j)
+    local r,h,c = post("/ajax/user/visit?id="..id,j) return r
   end
 
-  client.getFavorites = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/favorites?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.randomUser = function(j)
+    local r,h,c = post("/ajax/search/visit_random_user?foo=",j) return r
   end
 
-  client.getLikers = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/likers?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.getFavorites = function(id,j)
+    local r,h,c = post("/ajax/user/favorites?id="..id,j) return r
   end
 
-  client.getVisitors = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/visitors?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.getLikers = function(id,j)
+    local r,h,c = post("/ajax/user/likers?id="..id,j) return r
   end
 
-  client.getMessages = function(id,_json)
-    local r,h,c = req(host.."/ajax/user/messages?id="..id.."&s=0&_a=1&_c=1&_v=4&_r=254","POST",{Cookie=client.cookie})
-    r = string.gsub(r,"\\","")
-    if _json == true then r = json.decode(r) end
-    return r
+  client.getVisitors = function(id,j)
+    local r,h,c = post("/ajax/user/visitors?id="..id,j) return r
   end
+
+  client.getMessages = function(id,j)
+    local r,h,c = post("/ajax/user/messages?id="..id,j) return r
+  end
+  
+  client.changePassword = function(old,new,j)
+    local r,h,c = post("/ajax/account/change_password?o="..md5.sumhexa(old).."&n="..md5.sumhexa(new),j) return r
+  end
+    --[[client.delete = function(j)
+    local r,h,c = post("/ajax/account/delete_account,j) return r
+  end]]
 
   return client
 end
