@@ -1,6 +1,9 @@
 _G.cookie = ""
 local socket = require('socket.http')
-local json = require("json")
+local js = require("json")
+
+local json = {}
+
 local ltn12 = require('ltn12')
 local md5 = require("md5")
 
@@ -12,6 +15,22 @@ local function urlencode(str)
       function (c) return string.format ("%%%02X", string.byte(c)) end)
    str = string.gsub (str, " ", "+")
    return str
+end
+
+local function json.decode(ft)
+	local tab1 = js.decode(ft)
+	local function dec(t)
+		for a,b in pairs(t) do
+			if type(b) == "string" then
+				if string.sub(b,1,1) == "{" or string.sub(b,1,1) == "[" then
+					t[a] = js.decode(t[a]) --string.sub(b,1,string.len(b))
+					t[a] = dec(t[a])
+				end
+			end
+		end
+		return t
+	end
+	return dec(tab1)
 end
 
 local function req(u,m,h)
