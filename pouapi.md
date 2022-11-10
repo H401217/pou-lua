@@ -14,6 +14,7 @@ All requests use the following query strings:
 | _c    |                   -                   | _c=1    |
 | _v    | Version (current: 4)                  | _v=4    |
 | _r    | VersionCode of the app (current: 254) | _r=254  |
+
 These query strings indicate the current client version
 
 Also all requests use /ajax/ path, or else it will load www.pou.me page with broken images
@@ -54,6 +55,7 @@ Query strings:
 |-------|-------------------------------------------------------------------|------------------------------------|
 | e     | User email (must be url coded)                                    | e=example%40example.com            |
 | p     | User password encoded in [MD5](https://en.wikipedia.org/wiki/MD5) | p=a77b55332699835c035957df17630d28 |
+
 Example Result:
 ```
 HTTP/1.1 200 OK  
@@ -72,3 +74,22 @@ Content-Encoding : gzip
 {poudata...}
 ```
 **The Set-Cookie header is important because it allows to get access to more paths that requires you to log in.**
+
+# Get Top Likes
+```
+GET /ajax/site/top_likes
+```
+Returns JSON with an array of 20 pous with most likes.
+
+# Search Pou by nickname
+```
+POST /ajax/search/visit_user_by_nickname
+```
+Query strings:
+| Field | Description                                     | Example                            |
+|-------|-------------------------------------------------|------------------------------------|
+| n     | Pou Nickname                                    | e=Pou                              |
+
+Returns a JSON which contains Pou data
+
+# Get Game Leader
